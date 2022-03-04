@@ -1,0 +1,85 @@
+{
+  "terraform": [
+    {
+      "required_providers": [
+        {
+          "aws": {
+            "source": "hashicorp/aws",
+            "version": ">= 2.7.0"
+          }
+        }
+      ]
+    }
+  ],
+  "provider": [
+    {
+      "aws": [
+        {
+          "region": "us-west-2"
+        }
+      ]
+    }
+  ],
+  "resource": [
+    {
+      "aws_s3_bucket": [
+        {
+          "terraform_backend_bucket": [
+            {
+              "bucket": "terraform-state-ilbt5hjbxtqiq531t9nrqfbjuba4n7rwxuhjq05v3sxlx"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "aws_instance": [
+        {
+          "doodoodoodoo": [
+            {
+              "ami": "${data.aws_ami.ubuntu_latest.id}",
+              "instance_type": "t2.medium",
+              "lifecycle": [
+                {
+                  "ignore_changes": [
+                    "ami"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "data": [
+    {
+      "aws_ami": [
+        {
+          "ubuntu_latest": [
+            {
+              "most_recent": true,
+              "owners": [
+                "099720109477"
+              ],
+              "filter": [
+                {
+                  "name": "name",
+                  "values": [
+                    "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64*"
+                  ]
+                },
+                {
+                  "name": "virtualization-type",
+                  "values": [
+                    "hvm"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
