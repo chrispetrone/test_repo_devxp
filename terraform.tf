@@ -12,10 +12,10 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "terraform_backend_bucket" {
-      bucket = "terraform-state-ayxikbbxhuwsqi0tafp3nybyg7ob9p7u5h8ni8a4e82b3"
+      bucket = "terraform-state-tfij82101ne8s8yq4ocyolxw6jlhtm41xgzlb0grfuu0n"
 }
 
-resource "aws_instance" "testinstance" {
+resource "aws_instance" "testinstancetwo" {
       ami = data.aws_ami.ubuntu_latest.id
       instance_type = "t2.medium"
       lifecycle {
@@ -24,21 +24,21 @@ resource "aws_instance" "testinstance" {
       subnet_id = aws_subnet.devxp_vpc_subnet_public0.id
       associate_public_ip_address = true
       vpc_security_group_ids = [aws_security_group.devxp_security_group.id]
-      iam_instance_profile = aws_iam_instance_profile.testinstance_iam_role_instance_profile.name
+      iam_instance_profile = aws_iam_instance_profile.testinstancetwo_iam_role_instance_profile.name
 }
 
-resource "aws_eip" "testinstance_eip" {
-      instance = aws_instance.testinstance.id
+resource "aws_eip" "testinstancetwo_eip" {
+      instance = aws_instance.testinstancetwo.id
       vpc = true
 }
 
-resource "aws_iam_instance_profile" "testinstance_iam_role_instance_profile" {
-      name = "testinstance_iam_role_instance_profile"
-      role = aws_iam_role.testinstance_iam_role.name
+resource "aws_iam_instance_profile" "testinstancetwo_iam_role_instance_profile" {
+      name = "testinstancetwo_iam_role_instance_profile"
+      role = aws_iam_role.testinstancetwo_iam_role.name
 }
 
-resource "aws_iam_role" "testinstance_iam_role" {
-      name = "testinstance_iam_role"
+resource "aws_iam_role" "testinstancetwo_iam_role" {
+      name = "testinstancetwo_iam_role"
       assume_role_policy = "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Action\": \"sts:AssumeRole\",\n      \"Principal\": {\n        \"Service\": \"ec2.amazonaws.com\"\n      },\n      \"Effect\": \"Allow\",\n      \"Sid\": \"\"\n    }\n  ]\n}"
 }
 
