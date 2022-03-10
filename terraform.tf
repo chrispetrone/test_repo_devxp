@@ -12,7 +12,7 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "terraform_backend_bucket" {
-      bucket = "terraform-state-0soprvwyxdup2i15moi029juiz1phgy4619twa3mnic06"
+      bucket = "terraform-state-sgdibudc5hp49f5dkkd0lulmj2l8931lg2d16hbi2o8gl"
 }
 
 resource "aws_instance" "vm-instance" {
@@ -51,6 +51,114 @@ resource "aws_iam_access_key" "vm-instance_iam_access_key" {
       user = aws_iam_user.vm-instance_iam.name
 }
 
+resource "aws_instance" "vm-instance-a" {
+      ami = data.aws_ami.ubuntu_latest.id
+      instance_type = "t2.medium"
+      lifecycle {
+        ignore_changes = [ami]
+      }
+      subnet_id = aws_subnet.devxp_vpc_subnet_public0.id
+      associate_public_ip_address = true
+      vpc_security_group_ids = [aws_security_group.devxp_security_group.id]
+      iam_instance_profile = aws_iam_instance_profile.vm-instance-a_iam_role_instance_profile.name
+}
+
+resource "aws_eip" "vm-instance-a_eip" {
+      instance = aws_instance.vm-instance-a.id
+      vpc = true
+}
+
+resource "aws_iam_user" "vm-instance-a_iam" {
+      name = "vm-instance-a_iam"
+}
+
+resource "aws_iam_user_policy_attachment" "vm-instance-a_iam_policy_attachment0" {
+      user = aws_iam_user.vm-instance-a_iam.name
+      policy_arn = aws_iam_policy.vm-instance-a_iam_policy0.arn
+}
+
+resource "aws_iam_policy" "vm-instance-a_iam_policy0" {
+      name = "vm-instance-a_iam_policy0"
+      path = "/"
+      policy = data.aws_iam_policy_document.vm-instance-a_iam_policy_document.json
+}
+
+resource "aws_iam_access_key" "vm-instance-a_iam_access_key" {
+      user = aws_iam_user.vm-instance-a_iam.name
+}
+
+resource "aws_instance" "vm-instance-b" {
+      ami = data.aws_ami.ubuntu_latest.id
+      instance_type = "t2.medium"
+      lifecycle {
+        ignore_changes = [ami]
+      }
+      subnet_id = aws_subnet.devxp_vpc_subnet_public0.id
+      associate_public_ip_address = true
+      vpc_security_group_ids = [aws_security_group.devxp_security_group.id]
+      iam_instance_profile = aws_iam_instance_profile.vm-instance-b_iam_role_instance_profile.name
+}
+
+resource "aws_eip" "vm-instance-b_eip" {
+      instance = aws_instance.vm-instance-b.id
+      vpc = true
+}
+
+resource "aws_iam_user" "vm-instance-b_iam" {
+      name = "vm-instance-b_iam"
+}
+
+resource "aws_iam_user_policy_attachment" "vm-instance-b_iam_policy_attachment0" {
+      user = aws_iam_user.vm-instance-b_iam.name
+      policy_arn = aws_iam_policy.vm-instance-b_iam_policy0.arn
+}
+
+resource "aws_iam_policy" "vm-instance-b_iam_policy0" {
+      name = "vm-instance-b_iam_policy0"
+      path = "/"
+      policy = data.aws_iam_policy_document.vm-instance-b_iam_policy_document.json
+}
+
+resource "aws_iam_access_key" "vm-instance-b_iam_access_key" {
+      user = aws_iam_user.vm-instance-b_iam.name
+}
+
+resource "aws_instance" "vm-instance-c" {
+      ami = data.aws_ami.ubuntu_latest.id
+      instance_type = "t2.medium"
+      lifecycle {
+        ignore_changes = [ami]
+      }
+      subnet_id = aws_subnet.devxp_vpc_subnet_public0.id
+      associate_public_ip_address = true
+      vpc_security_group_ids = [aws_security_group.devxp_security_group.id]
+      iam_instance_profile = aws_iam_instance_profile.vm-instance-c_iam_role_instance_profile.name
+}
+
+resource "aws_eip" "vm-instance-c_eip" {
+      instance = aws_instance.vm-instance-c.id
+      vpc = true
+}
+
+resource "aws_iam_user" "vm-instance-c_iam" {
+      name = "vm-instance-c_iam"
+}
+
+resource "aws_iam_user_policy_attachment" "vm-instance-c_iam_policy_attachment0" {
+      user = aws_iam_user.vm-instance-c_iam.name
+      policy_arn = aws_iam_policy.vm-instance-c_iam_policy0.arn
+}
+
+resource "aws_iam_policy" "vm-instance-c_iam_policy0" {
+      name = "vm-instance-c_iam_policy0"
+      path = "/"
+      policy = data.aws_iam_policy_document.vm-instance-c_iam_policy_document.json
+}
+
+resource "aws_iam_access_key" "vm-instance-c_iam_access_key" {
+      user = aws_iam_user.vm-instance-c_iam.name
+}
+
 resource "aws_s3_bucket" "storage-bucket" {
       bucket = "storage-bucket"
 }
@@ -78,6 +186,35 @@ resource "aws_iam_policy" "storage-bucket_iam_policy0" {
 
 resource "aws_iam_access_key" "storage-bucket_iam_access_key" {
       user = aws_iam_user.storage-bucket_iam.name
+}
+
+resource "aws_s3_bucket" "storage-bucket-a" {
+      bucket = "storage-bucket-a"
+}
+
+resource "aws_s3_bucket_public_access_block" "storage-bucket-a_access" {
+      bucket = aws_s3_bucket.storage-bucket-a.id
+      block_public_acls = true
+      block_public_policy = true
+}
+
+resource "aws_iam_user" "storage-bucket-a_iam" {
+      name = "storage-bucket-a_iam"
+}
+
+resource "aws_iam_user_policy_attachment" "storage-bucket-a_iam_policy_attachment0" {
+      user = aws_iam_user.storage-bucket-a_iam.name
+      policy_arn = aws_iam_policy.storage-bucket-a_iam_policy0.arn
+}
+
+resource "aws_iam_policy" "storage-bucket-a_iam_policy0" {
+      name = "storage-bucket-a_iam_policy0"
+      path = "/"
+      policy = data.aws_iam_policy_document.storage-bucket-a_iam_policy_document.json
+}
+
+resource "aws_iam_access_key" "storage-bucket-a_iam_access_key" {
+      user = aws_iam_user.storage-bucket-a_iam.name
 }
 
 resource "aws_dynamodb_table" "dynamo-db" {
@@ -118,8 +255,38 @@ resource "aws_iam_instance_profile" "vm-instance_iam_role_instance_profile" {
       role = aws_iam_role.vm-instance_iam_role.name
 }
 
+resource "aws_iam_instance_profile" "vm-instance-a_iam_role_instance_profile" {
+      name = "vm-instance-a_iam_role_instance_profile"
+      role = aws_iam_role.vm-instance-a_iam_role.name
+}
+
+resource "aws_iam_instance_profile" "vm-instance-b_iam_role_instance_profile" {
+      name = "vm-instance-b_iam_role_instance_profile"
+      role = aws_iam_role.vm-instance-b_iam_role.name
+}
+
+resource "aws_iam_instance_profile" "vm-instance-c_iam_role_instance_profile" {
+      name = "vm-instance-c_iam_role_instance_profile"
+      role = aws_iam_role.vm-instance-c_iam_role.name
+}
+
 resource "aws_iam_role" "vm-instance_iam_role" {
       name = "vm-instance_iam_role"
+      assume_role_policy = "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Action\": \"sts:AssumeRole\",\n      \"Principal\": {\n        \"Service\": \"ec2.amazonaws.com\"\n      },\n      \"Effect\": \"Allow\",\n      \"Sid\": \"\"\n    }\n  ]\n}"
+}
+
+resource "aws_iam_role" "vm-instance-a_iam_role" {
+      name = "vm-instance-a_iam_role"
+      assume_role_policy = "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Action\": \"sts:AssumeRole\",\n      \"Principal\": {\n        \"Service\": \"ec2.amazonaws.com\"\n      },\n      \"Effect\": \"Allow\",\n      \"Sid\": \"\"\n    }\n  ]\n}"
+}
+
+resource "aws_iam_role" "vm-instance-b_iam_role" {
+      name = "vm-instance-b_iam_role"
+      assume_role_policy = "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Action\": \"sts:AssumeRole\",\n      \"Principal\": {\n        \"Service\": \"ec2.amazonaws.com\"\n      },\n      \"Effect\": \"Allow\",\n      \"Sid\": \"\"\n    }\n  ]\n}"
+}
+
+resource "aws_iam_role" "vm-instance-c_iam_role" {
+      name = "vm-instance-c_iam_role"
       assume_role_policy = "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Action\": \"sts:AssumeRole\",\n      \"Principal\": {\n        \"Service\": \"ec2.amazonaws.com\"\n      },\n      \"Effect\": \"Allow\",\n      \"Sid\": \"\"\n    }\n  ]\n}"
 }
 
@@ -128,9 +295,59 @@ resource "aws_iam_role_policy_attachment" "vm-instance_iam_role_storage-bucket_i
       role = aws_iam_role.vm-instance_iam_role.name
 }
 
+resource "aws_iam_role_policy_attachment" "vm-instance-a_iam_role_storage-bucket_iam_policy0_attachment" {
+      policy_arn = aws_iam_policy.storage-bucket_iam_policy0.arn
+      role = aws_iam_role.vm-instance-a_iam_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "vm-instance-b_iam_role_storage-bucket_iam_policy0_attachment" {
+      policy_arn = aws_iam_policy.storage-bucket_iam_policy0.arn
+      role = aws_iam_role.vm-instance-b_iam_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "vm-instance-c_iam_role_storage-bucket_iam_policy0_attachment" {
+      policy_arn = aws_iam_policy.storage-bucket_iam_policy0.arn
+      role = aws_iam_role.vm-instance-c_iam_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "vm-instance_iam_role_storage-bucket-a_iam_policy0_attachment" {
+      policy_arn = aws_iam_policy.storage-bucket-a_iam_policy0.arn
+      role = aws_iam_role.vm-instance_iam_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "vm-instance-a_iam_role_storage-bucket-a_iam_policy0_attachment" {
+      policy_arn = aws_iam_policy.storage-bucket-a_iam_policy0.arn
+      role = aws_iam_role.vm-instance-a_iam_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "vm-instance-b_iam_role_storage-bucket-a_iam_policy0_attachment" {
+      policy_arn = aws_iam_policy.storage-bucket-a_iam_policy0.arn
+      role = aws_iam_role.vm-instance-b_iam_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "vm-instance-c_iam_role_storage-bucket-a_iam_policy0_attachment" {
+      policy_arn = aws_iam_policy.storage-bucket-a_iam_policy0.arn
+      role = aws_iam_role.vm-instance-c_iam_role.name
+}
+
 resource "aws_iam_role_policy_attachment" "vm-instance_iam_role_dynamo-db_iam_policy0_attachment" {
       policy_arn = aws_iam_policy.dynamo-db_iam_policy0.arn
       role = aws_iam_role.vm-instance_iam_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "vm-instance-a_iam_role_dynamo-db_iam_policy0_attachment" {
+      policy_arn = aws_iam_policy.dynamo-db_iam_policy0.arn
+      role = aws_iam_role.vm-instance-a_iam_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "vm-instance-b_iam_role_dynamo-db_iam_policy0_attachment" {
+      policy_arn = aws_iam_policy.dynamo-db_iam_policy0.arn
+      role = aws_iam_role.vm-instance-b_iam_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "vm-instance-c_iam_role_dynamo-db_iam_policy0_attachment" {
+      policy_arn = aws_iam_policy.dynamo-db_iam_policy0.arn
+      role = aws_iam_role.vm-instance-c_iam_role.name
 }
 
 resource "aws_subnet" "devxp_vpc_subnet_public0" {
@@ -219,6 +436,45 @@ data "aws_ami" "ubuntu_latest" {
       }
 }
 
+data "aws_iam_policy_document" "vm-instance-a_iam_policy_document" {
+      statement {
+        actions = ["ec2:RunInstances", "ec2:AssociateIamInstanceProfile", "ec2:ReplaceIamInstanceProfileAssociation"]
+        effect = "Allow"
+        resources = ["arn:aws:ec2:::*"]
+      }
+      statement {
+        actions = ["iam:PassRole"]
+        effect = "Allow"
+        resources = [aws_instance.vm-instance-a.arn]
+      }
+}
+
+data "aws_iam_policy_document" "vm-instance-b_iam_policy_document" {
+      statement {
+        actions = ["ec2:RunInstances", "ec2:AssociateIamInstanceProfile", "ec2:ReplaceIamInstanceProfileAssociation"]
+        effect = "Allow"
+        resources = ["arn:aws:ec2:::*"]
+      }
+      statement {
+        actions = ["iam:PassRole"]
+        effect = "Allow"
+        resources = [aws_instance.vm-instance-b.arn]
+      }
+}
+
+data "aws_iam_policy_document" "vm-instance-c_iam_policy_document" {
+      statement {
+        actions = ["ec2:RunInstances", "ec2:AssociateIamInstanceProfile", "ec2:ReplaceIamInstanceProfileAssociation"]
+        effect = "Allow"
+        resources = ["arn:aws:ec2:::*"]
+      }
+      statement {
+        actions = ["iam:PassRole"]
+        effect = "Allow"
+        resources = [aws_instance.vm-instance-c.arn]
+      }
+}
+
 data "aws_iam_policy_document" "storage-bucket_iam_policy_document" {
       statement {
         actions = ["s3:ListAllMyBuckets"]
@@ -229,6 +485,19 @@ data "aws_iam_policy_document" "storage-bucket_iam_policy_document" {
         actions = ["s3:*"]
         effect = "Allow"
         resources = [aws_s3_bucket.storage-bucket.arn]
+      }
+}
+
+data "aws_iam_policy_document" "storage-bucket-a_iam_policy_document" {
+      statement {
+        actions = ["s3:ListAllMyBuckets"]
+        effect = "Allow"
+        resources = ["arn:aws:s3:::*"]
+      }
+      statement {
+        actions = ["s3:*"]
+        effect = "Allow"
+        resources = [aws_s3_bucket.storage-bucket-a.arn]
       }
 }
 
