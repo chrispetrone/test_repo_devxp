@@ -12,7 +12,43 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "terraform_backend_bucket" {
-      bucket = "terraform-state-u7jdqv7l0ebfsu8d0lag1hhiqa7fs8e3xgge63n5fj8p3"
+      bucket = "terraform-state-soxjxuwq7fri14oplr5gj1w2q4phywkec6pq52mjjz31q"
+}
+
+resource "aws_instance" "vminstance" {
+      ami = data.aws_ami.ubuntu_latest.id
+      instance_type = "t2.medium"
+      lifecycle {
+        ignore_changes = [ami]
+      }
+      subnet_id = aws_subnet.devxp_vpc_subnet_public0.id
+      associate_public_ip_address = true
+      vpc_security_group_ids = [aws_security_group.devxp_security_group.id]
+      iam_instance_profile = aws_iam_instance_profile.vminstance_iam_role_instance_profile.name
+}
+
+resource "aws_eip" "vminstance_eip" {
+      instance = aws_instance.vminstance.id
+      vpc = true
+}
+
+resource "aws_iam_user" "vminstance_iam" {
+      name = "vminstance_iam"
+}
+
+resource "aws_iam_user_policy_attachment" "vminstance_iam_policy_attachment0" {
+      user = aws_iam_user.vminstance_iam.name
+      policy_arn = aws_iam_policy.vminstance_iam_policy0.arn
+}
+
+resource "aws_iam_policy" "vminstance_iam_policy0" {
+      name = "vminstance_iam_policy0"
+      path = "/"
+      policy = data.aws_iam_policy_document.vminstance_iam_policy_document.json
+}
+
+resource "aws_iam_access_key" "vminstance_iam_access_key" {
+      user = aws_iam_user.vminstance_iam.name
 }
 
 resource "aws_instance" "testinstancethree" {
@@ -32,9 +68,19 @@ resource "aws_eip" "testinstancethree_eip" {
       vpc = true
 }
 
+resource "aws_iam_instance_profile" "vminstance_iam_role_instance_profile" {
+      name = "vminstance_iam_role_instance_profile"
+      role = aws_iam_role.vminstance_iam_role.name
+}
+
 resource "aws_iam_instance_profile" "testinstancethree_iam_role_instance_profile" {
       name = "testinstancethree_iam_role_instance_profile"
       role = aws_iam_role.testinstancethree_iam_role.name
+}
+
+resource "aws_iam_role" "vminstance_iam_role" {
+      name = "vminstance_iam_role"
+      assume_role_policy = "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Action\": \"sts:AssumeRole\",\n      \"Principal\": {\n        \"Service\": \"ec2.amazonaws.com\"\n      },\n      \"Effect\": \"Allow\",\n      \"Sid\": \"\"\n    }\n  ]\n}"
 }
 
 resource "aws_iam_role" "testinstancethree_iam_role" {
@@ -99,6 +145,19 @@ resource "aws_security_group" "devxp_security_group" {
         to_port = 0
         protocol = "-1"
         cidr_blocks = ["0.0.0.0/0"]
+      }
+}
+
+data "aws_iam_policy_document" "vminstance_iam_policy_document" {
+      statement {
+        actions = ["ec2:RunInstances", "ec2:AssociateIamInstanceProfile", "ec2:ReplaceIamInstanceProfileAssociation"]
+        effect = "Allow"
+        resources = ["arn:aws:ec2:::*"]
+      }
+      statement {
+        actions = ["iam:PassRole"]
+        effect = "Allow"
+        resources = [aws_instance.vminstance.arn]
       }
 }
 
