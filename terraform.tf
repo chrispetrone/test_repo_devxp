@@ -12,10 +12,10 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "terraform_backend_bucket" {
-      bucket = "terraform-state-6p398d6sct5sv5r1i3e5mkt28be0swbcy2g0zu00zrg30"
+      bucket = "terraform-state-0soprvwyxdup2i15moi029juiz1phgy4619twa3mnic06"
 }
 
-resource "aws_instance" "test-one" {
+resource "aws_instance" "vm-instance" {
       ami = data.aws_ami.ubuntu_latest.id
       instance_type = "t2.medium"
       lifecycle {
@@ -24,41 +24,113 @@ resource "aws_instance" "test-one" {
       subnet_id = aws_subnet.devxp_vpc_subnet_public0.id
       associate_public_ip_address = true
       vpc_security_group_ids = [aws_security_group.devxp_security_group.id]
-      iam_instance_profile = aws_iam_instance_profile.test-one_iam_role_instance_profile.name
+      iam_instance_profile = aws_iam_instance_profile.vm-instance_iam_role_instance_profile.name
 }
 
-resource "aws_eip" "test-one_eip" {
-      instance = aws_instance.test-one.id
+resource "aws_eip" "vm-instance_eip" {
+      instance = aws_instance.vm-instance.id
       vpc = true
 }
 
-resource "aws_iam_user" "test-one_iam" {
-      name = "test-one_iam"
+resource "aws_iam_user" "vm-instance_iam" {
+      name = "vm-instance_iam"
 }
 
-resource "aws_iam_user_policy_attachment" "test-one_iam_policy_attachment0" {
-      user = aws_iam_user.test-one_iam.name
-      policy_arn = aws_iam_policy.test-one_iam_policy0.arn
+resource "aws_iam_user_policy_attachment" "vm-instance_iam_policy_attachment0" {
+      user = aws_iam_user.vm-instance_iam.name
+      policy_arn = aws_iam_policy.vm-instance_iam_policy0.arn
 }
 
-resource "aws_iam_policy" "test-one_iam_policy0" {
-      name = "test-one_iam_policy0"
+resource "aws_iam_policy" "vm-instance_iam_policy0" {
+      name = "vm-instance_iam_policy0"
       path = "/"
-      policy = data.aws_iam_policy_document.test-one_iam_policy_document.json
+      policy = data.aws_iam_policy_document.vm-instance_iam_policy_document.json
 }
 
-resource "aws_iam_access_key" "test-one_iam_access_key" {
-      user = aws_iam_user.test-one_iam.name
+resource "aws_iam_access_key" "vm-instance_iam_access_key" {
+      user = aws_iam_user.vm-instance_iam.name
 }
 
-resource "aws_iam_instance_profile" "test-one_iam_role_instance_profile" {
-      name = "test-one_iam_role_instance_profile"
-      role = aws_iam_role.test-one_iam_role.name
+resource "aws_s3_bucket" "storage-bucket" {
+      bucket = "storage-bucket"
 }
 
-resource "aws_iam_role" "test-one_iam_role" {
-      name = "test-one_iam_role"
+resource "aws_s3_bucket_public_access_block" "storage-bucket_access" {
+      bucket = aws_s3_bucket.storage-bucket.id
+      block_public_acls = true
+      block_public_policy = true
+}
+
+resource "aws_iam_user" "storage-bucket_iam" {
+      name = "storage-bucket_iam"
+}
+
+resource "aws_iam_user_policy_attachment" "storage-bucket_iam_policy_attachment0" {
+      user = aws_iam_user.storage-bucket_iam.name
+      policy_arn = aws_iam_policy.storage-bucket_iam_policy0.arn
+}
+
+resource "aws_iam_policy" "storage-bucket_iam_policy0" {
+      name = "storage-bucket_iam_policy0"
+      path = "/"
+      policy = data.aws_iam_policy_document.storage-bucket_iam_policy_document.json
+}
+
+resource "aws_iam_access_key" "storage-bucket_iam_access_key" {
+      user = aws_iam_user.storage-bucket_iam.name
+}
+
+resource "aws_dynamodb_table" "dynamo-db" {
+      name = "dynamo-db"
+      hash_key = "userID"
+      billing_mode = "PAY_PER_REQUEST"
+      ttl {
+        attribute_name = "TimeToExist"
+        enabled = true
+      }
+      attribute {
+        name = "userID"
+        type = "S"
+      }
+}
+
+resource "aws_iam_user" "dynamo-db_iam" {
+      name = "dynamo-db_iam"
+}
+
+resource "aws_iam_user_policy_attachment" "dynamo-db_iam_policy_attachment0" {
+      user = aws_iam_user.dynamo-db_iam.name
+      policy_arn = aws_iam_policy.dynamo-db_iam_policy0.arn
+}
+
+resource "aws_iam_policy" "dynamo-db_iam_policy0" {
+      name = "dynamo-db_iam_policy0"
+      path = "/"
+      policy = data.aws_iam_policy_document.dynamo-db_iam_policy_document.json
+}
+
+resource "aws_iam_access_key" "dynamo-db_iam_access_key" {
+      user = aws_iam_user.dynamo-db_iam.name
+}
+
+resource "aws_iam_instance_profile" "vm-instance_iam_role_instance_profile" {
+      name = "vm-instance_iam_role_instance_profile"
+      role = aws_iam_role.vm-instance_iam_role.name
+}
+
+resource "aws_iam_role" "vm-instance_iam_role" {
+      name = "vm-instance_iam_role"
       assume_role_policy = "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Action\": \"sts:AssumeRole\",\n      \"Principal\": {\n        \"Service\": \"ec2.amazonaws.com\"\n      },\n      \"Effect\": \"Allow\",\n      \"Sid\": \"\"\n    }\n  ]\n}"
+}
+
+resource "aws_iam_role_policy_attachment" "vm-instance_iam_role_storage-bucket_iam_policy0_attachment" {
+      policy_arn = aws_iam_policy.storage-bucket_iam_policy0.arn
+      role = aws_iam_role.vm-instance_iam_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "vm-instance_iam_role_dynamo-db_iam_policy0_attachment" {
+      policy_arn = aws_iam_policy.dynamo-db_iam_policy0.arn
+      role = aws_iam_role.vm-instance_iam_role.name
 }
 
 resource "aws_subnet" "devxp_vpc_subnet_public0" {
@@ -121,7 +193,7 @@ resource "aws_security_group" "devxp_security_group" {
       }
 }
 
-data "aws_iam_policy_document" "test-one_iam_policy_document" {
+data "aws_iam_policy_document" "vm-instance_iam_policy_document" {
       statement {
         actions = ["ec2:RunInstances", "ec2:AssociateIamInstanceProfile", "ec2:ReplaceIamInstanceProfileAssociation"]
         effect = "Allow"
@@ -130,7 +202,7 @@ data "aws_iam_policy_document" "test-one_iam_policy_document" {
       statement {
         actions = ["iam:PassRole"]
         effect = "Allow"
-        resources = [aws_instance.test-one.arn]
+        resources = [aws_instance.vm-instance.arn]
       }
 }
 
@@ -144,6 +216,32 @@ data "aws_ami" "ubuntu_latest" {
       filter {
         name = "virtualization-type"
         values = ["hvm"]
+      }
+}
+
+data "aws_iam_policy_document" "storage-bucket_iam_policy_document" {
+      statement {
+        actions = ["s3:ListAllMyBuckets"]
+        effect = "Allow"
+        resources = ["arn:aws:s3:::*"]
+      }
+      statement {
+        actions = ["s3:*"]
+        effect = "Allow"
+        resources = [aws_s3_bucket.storage-bucket.arn]
+      }
+}
+
+data "aws_iam_policy_document" "dynamo-db_iam_policy_document" {
+      statement {
+        actions = ["dynamodb:DescribeTable", "dynamodb:Query", "dynamodb:Scan", "dynamodb:BatchGet*", "dynamodb:DescribeStream", "dynamodb:DescribeTable", "dynamodb:Get*", "dynamodb:Query", "dynamodb:Scan", "dynamodb:BatchWrite*", "dynamodb:CreateTable", "dynamodb:Delete*", "dynamodb:Update*", "dynamodb:PutItem"]
+        effect = "Allow"
+        resources = [aws_dynamodb_table.dynamo-db.arn]
+      }
+      statement {
+        actions = ["dynamodb:List*", "dynamodb:DescribeReservedCapacity*", "dynamodb:DescribeLimits", "dynamodb:DescribeTimeToLive"]
+        effect = "Allow"
+        resources = ["*"]
       }
 }
 
