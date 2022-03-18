@@ -12,7 +12,7 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "terraform_backend_bucket" {
-      bucket = "terraform-state-ah82pqaquk9tlfiotk1duf00awaero6w8xb3qifqtt9zs"
+      bucket = "terraform-state-q3cdwx997txzi0lqs60kimks2d6dd4t8qsvdlgu2yq09q"
 }
 
 resource "aws_instance" "Instance-ktAjk" {
@@ -51,6 +51,42 @@ resource "aws_iam_access_key" "Instance-ktAjk_iam_access_key" {
       user = aws_iam_user.Instance-ktAjk_iam.name
 }
 
+resource "aws_instance" "Instance-KkDr" {
+      ami = data.aws_ami.amazon_latest.id
+      instance_type = "t2.small"
+      lifecycle {
+        ignore_changes = [ami]
+      }
+      subnet_id = aws_subnet.devxp_vpc_subnet_public0.id
+      associate_public_ip_address = true
+      vpc_security_group_ids = [aws_security_group.devxp_security_group.id]
+      iam_instance_profile = aws_iam_instance_profile.Instance-KkDr_iam_role_instance_profile.name
+}
+
+resource "aws_eip" "Instance-KkDr_eip" {
+      instance = aws_instance.Instance-KkDr.id
+      vpc = true
+}
+
+resource "aws_iam_user" "Instance-KkDr_iam" {
+      name = "Instance-KkDr_iam"
+}
+
+resource "aws_iam_user_policy_attachment" "Instance-KkDr_iam_policy_attachment0" {
+      user = aws_iam_user.Instance-KkDr_iam.name
+      policy_arn = aws_iam_policy.Instance-KkDr_iam_policy0.arn
+}
+
+resource "aws_iam_policy" "Instance-KkDr_iam_policy0" {
+      name = "Instance-KkDr_iam_policy0"
+      path = "/"
+      policy = data.aws_iam_policy_document.Instance-KkDr_iam_policy_document.json
+}
+
+resource "aws_iam_access_key" "Instance-KkDr_iam_access_key" {
+      user = aws_iam_user.Instance-KkDr_iam.name
+}
+
 resource "aws_s3_bucket" "Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ" {
       bucket = "Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ"
 }
@@ -85,14 +121,29 @@ resource "aws_iam_instance_profile" "Instance-ktAjk_iam_role_instance_profile" {
       role = aws_iam_role.Instance-ktAjk_iam_role.name
 }
 
+resource "aws_iam_instance_profile" "Instance-KkDr_iam_role_instance_profile" {
+      name = "Instance-KkDr_iam_role_instance_profile"
+      role = aws_iam_role.Instance-KkDr_iam_role.name
+}
+
 resource "aws_iam_role" "Instance-ktAjk_iam_role" {
       name = "Instance-ktAjk_iam_role"
+      assume_role_policy = "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Action\": \"sts:AssumeRole\",\n      \"Principal\": {\n        \"Service\": \"ec2.amazonaws.com\"\n      },\n      \"Effect\": \"Allow\",\n      \"Sid\": \"\"\n    }\n  ]\n}"
+}
+
+resource "aws_iam_role" "Instance-KkDr_iam_role" {
+      name = "Instance-KkDr_iam_role"
       assume_role_policy = "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Action\": \"sts:AssumeRole\",\n      \"Principal\": {\n        \"Service\": \"ec2.amazonaws.com\"\n      },\n      \"Effect\": \"Allow\",\n      \"Sid\": \"\"\n    }\n  ]\n}"
 }
 
 resource "aws_iam_role_policy_attachment" "Instance-ktAjk_iam_role_Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ_iam_policy0_attachment" {
       policy_arn = aws_iam_policy.Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ_iam_policy0.arn
       role = aws_iam_role.Instance-ktAjk_iam_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "Instance-KkDr_iam_role_Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ_iam_policy0_attachment" {
+      policy_arn = aws_iam_policy.Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ_iam_policy0.arn
+      role = aws_iam_role.Instance-KkDr_iam_role.name
 }
 
 resource "aws_subnet" "devxp_vpc_subnet_public0" {
@@ -174,6 +225,32 @@ data "aws_ami" "ubuntu_latest" {
       filter {
         name = "name"
         values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64*"]
+      }
+      filter {
+        name = "virtualization-type"
+        values = ["hvm"]
+      }
+}
+
+data "aws_iam_policy_document" "Instance-KkDr_iam_policy_document" {
+      statement {
+        actions = ["ec2:RunInstances", "ec2:AssociateIamInstanceProfile", "ec2:ReplaceIamInstanceProfileAssociation"]
+        effect = "Allow"
+        resources = ["arn:aws:ec2:::*"]
+      }
+      statement {
+        actions = ["iam:PassRole"]
+        effect = "Allow"
+        resources = [aws_instance.Instance-KkDr.arn]
+      }
+}
+
+data "aws_ami" "amazon_latest" {
+      most_recent = true
+      owners = ["585441382316"]
+      filter {
+        name = "name"
+        values = ["*AmazonLinux*"]
       }
       filter {
         name = "virtualization-type"
