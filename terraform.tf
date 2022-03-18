@@ -12,7 +12,7 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "terraform_backend_bucket" {
-      bucket = "terraform-state-q3cdwx997txzi0lqs60kimks2d6dd4t8qsvdlgu2yq09q"
+      bucket = "terraform-state-3g3pqh7db44o49hb6z9aadxmfyqqrm5i1yyfy6t9cyzri"
 }
 
 resource "aws_instance" "Instance-ktAjk" {
@@ -116,6 +116,37 @@ resource "aws_iam_access_key" "Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ_iam_access_ke
       user = aws_iam_user.Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ_iam.name
 }
 
+resource "aws_sns_topic" "Glacier-HXCo-maPv-iYUr-zfkK-hOIM_sns_topic" {
+      name = "Glacier-HXCo-maPv-iYUr-zfkK-hOIM_sns_topic"
+}
+
+resource "aws_glacier_vault" "Glacier-HXCo-maPv-iYUr-zfkK-hOIM" {
+      name = "Glacier-HXCo-maPv-iYUr-zfkK-hOIM"
+      notification {
+        sns_topic = aws_sns_topic.Glacier-HXCo-maPv-iYUr-zfkK-hOIM_sns_topic.arn
+        events = ["ArchiveRetrievalCompleted", "InventoryRetrievalCompleted"]
+      }
+}
+
+resource "aws_iam_user" "Glacier-HXCo-maPv-iYUr-zfkK-hOIM_iam" {
+      name = "Glacier-HXCo-maPv-iYUr-zfkK-hOIM_iam"
+}
+
+resource "aws_iam_user_policy_attachment" "Glacier-HXCo-maPv-iYUr-zfkK-hOIM_iam_policy_attachment0" {
+      user = aws_iam_user.Glacier-HXCo-maPv-iYUr-zfkK-hOIM_iam.name
+      policy_arn = aws_iam_policy.Glacier-HXCo-maPv-iYUr-zfkK-hOIM_iam_policy0.arn
+}
+
+resource "aws_iam_policy" "Glacier-HXCo-maPv-iYUr-zfkK-hOIM_iam_policy0" {
+      name = "Glacier-HXCo-maPv-iYUr-zfkK-hOIM_iam_policy0"
+      path = "/"
+      policy = data.aws_iam_policy_document.Glacier-HXCo-maPv-iYUr-zfkK-hOIM_iam_policy_document.json
+}
+
+resource "aws_iam_access_key" "Glacier-HXCo-maPv-iYUr-zfkK-hOIM_iam_access_key" {
+      user = aws_iam_user.Glacier-HXCo-maPv-iYUr-zfkK-hOIM_iam.name
+}
+
 resource "aws_iam_instance_profile" "Instance-ktAjk_iam_role_instance_profile" {
       name = "Instance-ktAjk_iam_role_instance_profile"
       role = aws_iam_role.Instance-ktAjk_iam_role.name
@@ -143,6 +174,16 @@ resource "aws_iam_role_policy_attachment" "Instance-ktAjk_iam_role_Bucket-VmfO-q
 
 resource "aws_iam_role_policy_attachment" "Instance-KkDr_iam_role_Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ_iam_policy0_attachment" {
       policy_arn = aws_iam_policy.Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ_iam_policy0.arn
+      role = aws_iam_role.Instance-KkDr_iam_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "Instance-ktAjk_iam_role_Glacier-HXCo-maPv-iYUr-zfkK-hOIM_iam_policy0_attachment" {
+      policy_arn = aws_iam_policy.Glacier-HXCo-maPv-iYUr-zfkK-hOIM_iam_policy0.arn
+      role = aws_iam_role.Instance-ktAjk_iam_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "Instance-KkDr_iam_role_Glacier-HXCo-maPv-iYUr-zfkK-hOIM_iam_policy0_attachment" {
+      policy_arn = aws_iam_policy.Glacier-HXCo-maPv-iYUr-zfkK-hOIM_iam_policy0.arn
       role = aws_iam_role.Instance-KkDr_iam_role.name
 }
 
@@ -268,6 +309,19 @@ data "aws_iam_policy_document" "Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ_iam_policy_d
         actions = ["s3:*"]
         effect = "Allow"
         resources = [aws_s3_bucket.Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ.arn]
+      }
+}
+
+data "aws_iam_policy_document" "Glacier-HXCo-maPv-iYUr-zfkK-hOIM_iam_policy_document" {
+      statement {
+        actions = ["glacier:InitiateJob", "glacier:GetJobOutput", "glacier:UploadArchive", "glacier:InitiateMultipartUpload", "glacier:AbortMultipartUpload", "glacier:CompleteMultipartUpload", "glacier:DescribeVault"]
+        effect = "Allow"
+        resources = [aws_glacier_vault.Glacier-HXCo-maPv-iYUr-zfkK-hOIM.arn]
+      }
+      statement {
+        actions = ["glacier:ListVaults"]
+        effect = "Allow"
+        resources = ["*"]
       }
 }
 
