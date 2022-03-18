@@ -12,52 +12,52 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "terraform_backend_bucket" {
-      bucket = "terraform-state-94x8dhiy5u87dx56uwk3rj0yvvs8n62r7pc8vt3th86ct"
+      bucket = "terraform-state-ui48ooc4a3bpa2w98jcmjkfvxhk9cgfij6bgd0cwayii4"
 }
 
-resource "aws_instance" "Instance-acub" {
-      ami = data.aws_ami.amazon_latest.id
-      instance_type = "t2.xlarge"
+resource "aws_instance" "Instance-ktAj" {
+      ami = data.aws_ami.ubuntu_latest.id
+      instance_type = "t2.medium"
       lifecycle {
         ignore_changes = [ami]
       }
       subnet_id = aws_subnet.devxp_vpc_subnet_public0.id
       associate_public_ip_address = true
       vpc_security_group_ids = [aws_security_group.devxp_security_group.id]
-      iam_instance_profile = aws_iam_instance_profile.Instance-acub_iam_role_instance_profile.name
+      iam_instance_profile = aws_iam_instance_profile.Instance-ktAj_iam_role_instance_profile.name
 }
 
-resource "aws_eip" "Instance-acub_eip" {
-      instance = aws_instance.Instance-acub.id
+resource "aws_eip" "Instance-ktAj_eip" {
+      instance = aws_instance.Instance-ktAj.id
       vpc = true
 }
 
-resource "aws_iam_user" "Instance-acub_iam" {
-      name = "Instance-acub_iam"
+resource "aws_iam_user" "Instance-ktAj_iam" {
+      name = "Instance-ktAj_iam"
 }
 
-resource "aws_iam_user_policy_attachment" "Instance-acub_iam_policy_attachment0" {
-      user = aws_iam_user.Instance-acub_iam.name
-      policy_arn = aws_iam_policy.Instance-acub_iam_policy0.arn
+resource "aws_iam_user_policy_attachment" "Instance-ktAj_iam_policy_attachment0" {
+      user = aws_iam_user.Instance-ktAj_iam.name
+      policy_arn = aws_iam_policy.Instance-ktAj_iam_policy0.arn
 }
 
-resource "aws_iam_policy" "Instance-acub_iam_policy0" {
-      name = "Instance-acub_iam_policy0"
+resource "aws_iam_policy" "Instance-ktAj_iam_policy0" {
+      name = "Instance-ktAj_iam_policy0"
       path = "/"
-      policy = data.aws_iam_policy_document.Instance-acub_iam_policy_document.json
+      policy = data.aws_iam_policy_document.Instance-ktAj_iam_policy_document.json
 }
 
-resource "aws_iam_access_key" "Instance-acub_iam_access_key" {
-      user = aws_iam_user.Instance-acub_iam.name
+resource "aws_iam_access_key" "Instance-ktAj_iam_access_key" {
+      user = aws_iam_user.Instance-ktAj_iam.name
 }
 
-resource "aws_iam_instance_profile" "Instance-acub_iam_role_instance_profile" {
-      name = "Instance-acub_iam_role_instance_profile"
-      role = aws_iam_role.Instance-acub_iam_role.name
+resource "aws_iam_instance_profile" "Instance-ktAj_iam_role_instance_profile" {
+      name = "Instance-ktAj_iam_role_instance_profile"
+      role = aws_iam_role.Instance-ktAj_iam_role.name
 }
 
-resource "aws_iam_role" "Instance-acub_iam_role" {
-      name = "Instance-acub_iam_role"
+resource "aws_iam_role" "Instance-ktAj_iam_role" {
+      name = "Instance-ktAj_iam_role"
       assume_role_policy = "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Action\": \"sts:AssumeRole\",\n      \"Principal\": {\n        \"Service\": \"ec2.amazonaws.com\"\n      },\n      \"Effect\": \"Allow\",\n      \"Sid\": \"\"\n    }\n  ]\n}"
 }
 
@@ -121,7 +121,7 @@ resource "aws_security_group" "devxp_security_group" {
       }
 }
 
-data "aws_iam_policy_document" "Instance-acub_iam_policy_document" {
+data "aws_iam_policy_document" "Instance-ktAj_iam_policy_document" {
       statement {
         actions = ["ec2:RunInstances", "ec2:AssociateIamInstanceProfile", "ec2:ReplaceIamInstanceProfileAssociation"]
         effect = "Allow"
@@ -130,16 +130,16 @@ data "aws_iam_policy_document" "Instance-acub_iam_policy_document" {
       statement {
         actions = ["iam:PassRole"]
         effect = "Allow"
-        resources = [aws_instance.Instance-acub.arn]
+        resources = [aws_instance.Instance-ktAj.arn]
       }
 }
 
-data "aws_ami" "amazon_latest" {
+data "aws_ami" "ubuntu_latest" {
       most_recent = true
-      owners = ["585441382316"]
+      owners = ["099720109477"]
       filter {
         name = "name"
-        values = ["*AmazonLinux*"]
+        values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64*"]
       }
       filter {
         name = "virtualization-type"
