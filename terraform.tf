@@ -12,7 +12,7 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "terraform_backend_bucket" {
-      bucket = "terraform-state-c87rdge43jjckh7jolqcdd72h730e17f4afkrg6zo6kh1"
+      bucket = "terraform-state-l3bo8zgq6nrznr1pruuizsn453wyyga0lpdxag7i01tb3"
 }
 
 resource "aws_instance" "Instance-ktAjk" {
@@ -51,6 +51,35 @@ resource "aws_iam_access_key" "Instance-ktAjk_iam_access_key" {
       user = aws_iam_user.Instance-ktAjk_iam.name
 }
 
+resource "aws_s3_bucket" "Bucket-VmfO-qHna-ErXK-ugcE-lDHZ" {
+      bucket = "Bucket-VmfO-qHna-ErXK-ugcE-lDHZ"
+}
+
+resource "aws_s3_bucket_public_access_block" "Bucket-VmfO-qHna-ErXK-ugcE-lDHZ_access" {
+      bucket = aws_s3_bucket.Bucket-VmfO-qHna-ErXK-ugcE-lDHZ.id
+      block_public_acls = true
+      block_public_policy = true
+}
+
+resource "aws_iam_user" "Bucket-VmfO-qHna-ErXK-ugcE-lDHZ_iam" {
+      name = "Bucket-VmfO-qHna-ErXK-ugcE-lDHZ_iam"
+}
+
+resource "aws_iam_user_policy_attachment" "Bucket-VmfO-qHna-ErXK-ugcE-lDHZ_iam_policy_attachment0" {
+      user = aws_iam_user.Bucket-VmfO-qHna-ErXK-ugcE-lDHZ_iam.name
+      policy_arn = aws_iam_policy.Bucket-VmfO-qHna-ErXK-ugcE-lDHZ_iam_policy0.arn
+}
+
+resource "aws_iam_policy" "Bucket-VmfO-qHna-ErXK-ugcE-lDHZ_iam_policy0" {
+      name = "Bucket-VmfO-qHna-ErXK-ugcE-lDHZ_iam_policy0"
+      path = "/"
+      policy = data.aws_iam_policy_document.Bucket-VmfO-qHna-ErXK-ugcE-lDHZ_iam_policy_document.json
+}
+
+resource "aws_iam_access_key" "Bucket-VmfO-qHna-ErXK-ugcE-lDHZ_iam_access_key" {
+      user = aws_iam_user.Bucket-VmfO-qHna-ErXK-ugcE-lDHZ_iam.name
+}
+
 resource "aws_iam_instance_profile" "Instance-ktAjk_iam_role_instance_profile" {
       name = "Instance-ktAjk_iam_role_instance_profile"
       role = aws_iam_role.Instance-ktAjk_iam_role.name
@@ -59,6 +88,11 @@ resource "aws_iam_instance_profile" "Instance-ktAjk_iam_role_instance_profile" {
 resource "aws_iam_role" "Instance-ktAjk_iam_role" {
       name = "Instance-ktAjk_iam_role"
       assume_role_policy = "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Action\": \"sts:AssumeRole\",\n      \"Principal\": {\n        \"Service\": \"ec2.amazonaws.com\"\n      },\n      \"Effect\": \"Allow\",\n      \"Sid\": \"\"\n    }\n  ]\n}"
+}
+
+resource "aws_iam_role_policy_attachment" "Instance-ktAjk_iam_role_Bucket-VmfO-qHna-ErXK-ugcE-lDHZ_iam_policy0_attachment" {
+      policy_arn = aws_iam_policy.Bucket-VmfO-qHna-ErXK-ugcE-lDHZ_iam_policy0.arn
+      role = aws_iam_role.Instance-ktAjk_iam_role.name
 }
 
 resource "aws_subnet" "devxp_vpc_subnet_public0" {
@@ -144,6 +178,19 @@ data "aws_ami" "ubuntu_latest" {
       filter {
         name = "virtualization-type"
         values = ["hvm"]
+      }
+}
+
+data "aws_iam_policy_document" "Bucket-VmfO-qHna-ErXK-ugcE-lDHZ_iam_policy_document" {
+      statement {
+        actions = ["s3:ListAllMyBuckets"]
+        effect = "Allow"
+        resources = ["arn:aws:s3:::*"]
+      }
+      statement {
+        actions = ["s3:*"]
+        effect = "Allow"
+        resources = [aws_s3_bucket.Bucket-VmfO-qHna-ErXK-ugcE-lDHZ.arn]
       }
 }
 
