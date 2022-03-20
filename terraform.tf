@@ -12,7 +12,7 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "terraform_backend_bucket" {
-      bucket = "terraform-state-6ivipdxzkzp6vg37j9c8wlo8wu78467ta94xnx7r3phbc"
+      bucket = "terraform-state-i3gh6yfq6ncfs2d8s12523l7e3jn3wmnzhadcya28mlun"
 }
 
 resource "aws_instance" "Instance-KkDr" {
@@ -140,6 +140,39 @@ resource "aws_iam_access_key" "Glacier-HXCo-maPv-iYUr-zfkK-hOIM_iam_access_key" 
       user = aws_iam_user.Glacier-HXCo-maPv-iYUr-zfkK-hOIM_iam.name
 }
 
+resource "aws_dynamodb_table" "DynamoDb-wulc" {
+      name = "DynamoDb-wulc"
+      hash_key = "asdasdasd"
+      billing_mode = "PAY_PER_REQUEST"
+      ttl {
+        attribute_name = "TimeToExist"
+        enabled = true
+      }
+      attribute {
+        name = "asdasdasd"
+        type = "S"
+      }
+}
+
+resource "aws_iam_user" "DynamoDb-wulc_iam" {
+      name = "DynamoDb-wulc_iam"
+}
+
+resource "aws_iam_user_policy_attachment" "DynamoDb-wulc_iam_policy_attachment0" {
+      user = aws_iam_user.DynamoDb-wulc_iam.name
+      policy_arn = aws_iam_policy.DynamoDb-wulc_iam_policy0.arn
+}
+
+resource "aws_iam_policy" "DynamoDb-wulc_iam_policy0" {
+      name = "DynamoDb-wulc_iam_policy0"
+      path = "/"
+      policy = data.aws_iam_policy_document.DynamoDb-wulc_iam_policy_document.json
+}
+
+resource "aws_iam_access_key" "DynamoDb-wulc_iam_access_key" {
+      user = aws_iam_user.DynamoDb-wulc_iam.name
+}
+
 resource "aws_iam_instance_profile" "Instance-KkDr_iam_role_instance_profile" {
       name = "Instance-KkDr_iam_role_instance_profile"
       role = aws_iam_role.Instance-KkDr_iam_role.name
@@ -162,6 +195,11 @@ resource "aws_iam_role_policy_attachment" "Instance-KkDr_iam_role_Bucket-VmfO-qH
 
 resource "aws_iam_role_policy_attachment" "Instance-KkDr_iam_role_Glacier-HXCo-maPv-iYUr-zfkK-hOIM_iam_policy0_attachment" {
       policy_arn = aws_iam_policy.Glacier-HXCo-maPv-iYUr-zfkK-hOIM_iam_policy0.arn
+      role = aws_iam_role.Instance-KkDr_iam_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "Instance-KkDr_iam_role_DynamoDb-wulc_iam_policy0_attachment" {
+      policy_arn = aws_iam_policy.DynamoDb-wulc_iam_policy0.arn
       role = aws_iam_role.Instance-KkDr_iam_role.name
 }
 
@@ -291,6 +329,19 @@ data "aws_iam_policy_document" "Glacier-HXCo-maPv-iYUr-zfkK-hOIM_iam_policy_docu
       }
       statement {
         actions = ["glacier:ListVaults"]
+        effect = "Allow"
+        resources = ["*"]
+      }
+}
+
+data "aws_iam_policy_document" "DynamoDb-wulc_iam_policy_document" {
+      statement {
+        actions = ["dynamodb:DescribeTable", "dynamodb:Query", "dynamodb:Scan", "dynamodb:BatchGet*", "dynamodb:DescribeStream", "dynamodb:DescribeTable", "dynamodb:Get*", "dynamodb:Query", "dynamodb:Scan", "dynamodb:BatchWrite*", "dynamodb:CreateTable", "dynamodb:Delete*", "dynamodb:Update*", "dynamodb:PutItem"]
+        effect = "Allow"
+        resources = [aws_dynamodb_table.DynamoDb-wulc.arn]
+      }
+      statement {
+        actions = ["dynamodb:List*", "dynamodb:DescribeReservedCapacity*", "dynamodb:DescribeLimits", "dynamodb:DescribeTimeToLive"]
         effect = "Allow"
         resources = ["*"]
       }
