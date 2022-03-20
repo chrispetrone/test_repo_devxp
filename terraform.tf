@@ -12,43 +12,7 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "terraform_backend_bucket" {
-      bucket = "terraform-state-3g3pqh7db44o49hb6z9aadxmfyqqrm5i1yyfy6t9cyzri"
-}
-
-resource "aws_instance" "Instance-ktAjk" {
-      ami = data.aws_ami.ubuntu_latest.id
-      instance_type = "t2.medium"
-      lifecycle {
-        ignore_changes = [ami]
-      }
-      subnet_id = aws_subnet.devxp_vpc_subnet_public0.id
-      associate_public_ip_address = true
-      vpc_security_group_ids = [aws_security_group.devxp_security_group.id]
-      iam_instance_profile = aws_iam_instance_profile.Instance-ktAjk_iam_role_instance_profile.name
-}
-
-resource "aws_eip" "Instance-ktAjk_eip" {
-      instance = aws_instance.Instance-ktAjk.id
-      vpc = true
-}
-
-resource "aws_iam_user" "Instance-ktAjk_iam" {
-      name = "Instance-ktAjk_iam"
-}
-
-resource "aws_iam_user_policy_attachment" "Instance-ktAjk_iam_policy_attachment0" {
-      user = aws_iam_user.Instance-ktAjk_iam.name
-      policy_arn = aws_iam_policy.Instance-ktAjk_iam_policy0.arn
-}
-
-resource "aws_iam_policy" "Instance-ktAjk_iam_policy0" {
-      name = "Instance-ktAjk_iam_policy0"
-      path = "/"
-      policy = data.aws_iam_policy_document.Instance-ktAjk_iam_policy_document.json
-}
-
-resource "aws_iam_access_key" "Instance-ktAjk_iam_access_key" {
-      user = aws_iam_user.Instance-ktAjk_iam.name
+      bucket = "terraform-state-ciagz1iqe2azm7d8sw35eeqtpj4rcmavpyus5r7arzegi"
 }
 
 resource "aws_instance" "Instance-KkDr" {
@@ -147,19 +111,9 @@ resource "aws_iam_access_key" "Glacier-HXCo-maPv-iYUr-zfkK-hOIM_iam_access_key" 
       user = aws_iam_user.Glacier-HXCo-maPv-iYUr-zfkK-hOIM_iam.name
 }
 
-resource "aws_iam_instance_profile" "Instance-ktAjk_iam_role_instance_profile" {
-      name = "Instance-ktAjk_iam_role_instance_profile"
-      role = aws_iam_role.Instance-ktAjk_iam_role.name
-}
-
 resource "aws_iam_instance_profile" "Instance-KkDr_iam_role_instance_profile" {
       name = "Instance-KkDr_iam_role_instance_profile"
       role = aws_iam_role.Instance-KkDr_iam_role.name
-}
-
-resource "aws_iam_role" "Instance-ktAjk_iam_role" {
-      name = "Instance-ktAjk_iam_role"
-      assume_role_policy = "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Action\": \"sts:AssumeRole\",\n      \"Principal\": {\n        \"Service\": \"ec2.amazonaws.com\"\n      },\n      \"Effect\": \"Allow\",\n      \"Sid\": \"\"\n    }\n  ]\n}"
 }
 
 resource "aws_iam_role" "Instance-KkDr_iam_role" {
@@ -167,19 +121,9 @@ resource "aws_iam_role" "Instance-KkDr_iam_role" {
       assume_role_policy = "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Action\": \"sts:AssumeRole\",\n      \"Principal\": {\n        \"Service\": \"ec2.amazonaws.com\"\n      },\n      \"Effect\": \"Allow\",\n      \"Sid\": \"\"\n    }\n  ]\n}"
 }
 
-resource "aws_iam_role_policy_attachment" "Instance-ktAjk_iam_role_Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ_iam_policy0_attachment" {
-      policy_arn = aws_iam_policy.Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ_iam_policy0.arn
-      role = aws_iam_role.Instance-ktAjk_iam_role.name
-}
-
 resource "aws_iam_role_policy_attachment" "Instance-KkDr_iam_role_Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ_iam_policy0_attachment" {
       policy_arn = aws_iam_policy.Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ_iam_policy0.arn
       role = aws_iam_role.Instance-KkDr_iam_role.name
-}
-
-resource "aws_iam_role_policy_attachment" "Instance-ktAjk_iam_role_Glacier-HXCo-maPv-iYUr-zfkK-hOIM_iam_policy0_attachment" {
-      policy_arn = aws_iam_policy.Glacier-HXCo-maPv-iYUr-zfkK-hOIM_iam_policy0.arn
-      role = aws_iam_role.Instance-ktAjk_iam_role.name
 }
 
 resource "aws_iam_role_policy_attachment" "Instance-KkDr_iam_role_Glacier-HXCo-maPv-iYUr-zfkK-hOIM_iam_policy0_attachment" {
@@ -234,42 +178,22 @@ resource "aws_security_group" "devxp_security_group" {
       vpc_id = aws_vpc.devxp_vpc.id
       name = "devxp_security_group"
       ingress {
-        from_port = 0
-        to_port = 0
-        protocol = "-1"
+        from_port = 22
+        to_port = 22
+        protocol = "tcp"
         cidr_blocks = ["0.0.0.0/0"]
       }
       egress {
-        from_port = 0
-        to_port = 0
-        protocol = "-1"
+        from_port = 80
+        to_port = 80
+        protocol = "tcp"
         cidr_blocks = ["0.0.0.0/0"]
       }
-}
-
-data "aws_iam_policy_document" "Instance-ktAjk_iam_policy_document" {
-      statement {
-        actions = ["ec2:RunInstances", "ec2:AssociateIamInstanceProfile", "ec2:ReplaceIamInstanceProfileAssociation"]
-        effect = "Allow"
-        resources = ["arn:aws:ec2:::*"]
-      }
-      statement {
-        actions = ["iam:PassRole"]
-        effect = "Allow"
-        resources = [aws_instance.Instance-ktAjk.arn]
-      }
-}
-
-data "aws_ami" "ubuntu_latest" {
-      most_recent = true
-      owners = ["099720109477"]
-      filter {
-        name = "name"
-        values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64*"]
-      }
-      filter {
-        name = "virtualization-type"
-        values = ["hvm"]
+      egress {
+        from_port = 443
+        to_port = 443
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
       }
 }
 
