@@ -12,7 +12,7 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "terraform_backend_bucket" {
-      bucket = "terraform-state-t1wgcmg86ql7yn9n31rw5m93ermq5rj3rmacea0df60gx"
+      bucket = "terraform-state-ixzvjycdu96hpn9ros4c13xsqs4pt7zccwrftcume77yh"
 }
 
 resource "aws_instance" "Instance-KkDr" {
@@ -80,35 +80,6 @@ resource "aws_iam_access_key" "Bucket-mOxA-kSCp-Fnup-LOhD-XyaX_iam_access_key" {
       user = aws_iam_user.Bucket-mOxA-kSCp-Fnup-LOhD-XyaX_iam.name
 }
 
-resource "aws_s3_bucket" "Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ" {
-      bucket = "Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ"
-}
-
-resource "aws_s3_bucket_public_access_block" "Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ_access" {
-      bucket = aws_s3_bucket.Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ.id
-      block_public_acls = true
-      block_public_policy = true
-}
-
-resource "aws_iam_user" "Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ_iam" {
-      name = "Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ_iam"
-}
-
-resource "aws_iam_user_policy_attachment" "Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ_iam_policy_attachment0" {
-      user = aws_iam_user.Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ_iam.name
-      policy_arn = aws_iam_policy.Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ_iam_policy0.arn
-}
-
-resource "aws_iam_policy" "Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ_iam_policy0" {
-      name = "Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ_iam_policy0"
-      path = "/"
-      policy = data.aws_iam_policy_document.Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ_iam_policy_document.json
-}
-
-resource "aws_iam_access_key" "Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ_iam_access_key" {
-      user = aws_iam_user.Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ_iam.name
-}
-
 resource "aws_sns_topic" "Glacier-HXCo-maPv-iYUr-zfkK-hOIM_sns_topic" {
       name = "Glacier-HXCo-maPv-iYUr-zfkK-hOIM_sns_topic"
 }
@@ -152,11 +123,6 @@ resource "aws_iam_role" "Instance-KkDr_iam_role" {
 
 resource "aws_iam_role_policy_attachment" "Instance-KkDr_iam_role_Bucket-mOxA-kSCp-Fnup-LOhD-XyaX_iam_policy0_attachment" {
       policy_arn = aws_iam_policy.Bucket-mOxA-kSCp-Fnup-LOhD-XyaX_iam_policy0.arn
-      role = aws_iam_role.Instance-KkDr_iam_role.name
-}
-
-resource "aws_iam_role_policy_attachment" "Instance-KkDr_iam_role_Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ_iam_policy0_attachment" {
-      policy_arn = aws_iam_policy.Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ_iam_policy0.arn
       role = aws_iam_role.Instance-KkDr_iam_role.name
 }
 
@@ -267,19 +233,6 @@ data "aws_iam_policy_document" "Bucket-mOxA-kSCp-Fnup-LOhD-XyaX_iam_policy_docum
         actions = ["s3:*"]
         effect = "Allow"
         resources = [aws_s3_bucket.Bucket-mOxA-kSCp-Fnup-LOhD-XyaX.arn]
-      }
-}
-
-data "aws_iam_policy_document" "Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ_iam_policy_document" {
-      statement {
-        actions = ["s3:ListAllMyBuckets"]
-        effect = "Allow"
-        resources = ["arn:aws:s3:::*"]
-      }
-      statement {
-        actions = ["s3:*"]
-        effect = "Allow"
-        resources = [aws_s3_bucket.Bucket-VmfO-qHna-ErXK-sadaugcE-lDHZ.arn]
       }
 }
 
