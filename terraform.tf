@@ -12,7 +12,7 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "terraform_backend_bucket" {
-      bucket = "terraform-state-o690e1spgzo77e27mnx9m20jf234r810saa57e2onl1wp"
+      bucket = "terraform-state-yemh59pejrinxa4dl1a39ldmsdy051cu1y639k7teojc0"
 }
 
 resource "aws_instance" "Instance-KkDr" {
