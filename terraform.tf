@@ -12,7 +12,43 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "terraform_backend_bucket" {
-      bucket = "terraform-state-ixzvjycdu96hpn9ros4c13xsqs4pt7zccwrftcume77yh"
+      bucket = "terraform-state-uw71elbvrxik8x4tp85u5nn510ksa6vy9mm8bgql48w1k"
+}
+
+resource "aws_instance" "Instance-saEN" {
+      ami = data.aws_ami.amazon_latest.id
+      instance_type = "t2.large"
+      lifecycle {
+        ignore_changes = [ami]
+      }
+      subnet_id = aws_subnet.devxp_vpc_subnet_public0.id
+      associate_public_ip_address = true
+      vpc_security_group_ids = [aws_security_group.devxp_security_group.id]
+      iam_instance_profile = aws_iam_instance_profile.Instance-saEN_iam_role_instance_profile.name
+}
+
+resource "aws_eip" "Instance-saEN_eip" {
+      instance = aws_instance.Instance-saEN.id
+      vpc = true
+}
+
+resource "aws_iam_user" "Instance-saEN_iam" {
+      name = "Instance-saEN_iam"
+}
+
+resource "aws_iam_user_policy_attachment" "Instance-saEN_iam_policy_attachment0" {
+      user = aws_iam_user.Instance-saEN_iam.name
+      policy_arn = aws_iam_policy.Instance-saEN_iam_policy0.arn
+}
+
+resource "aws_iam_policy" "Instance-saEN_iam_policy0" {
+      name = "Instance-saEN_iam_policy0"
+      path = "/"
+      policy = data.aws_iam_policy_document.Instance-saEN_iam_policy_document.json
+}
+
+resource "aws_iam_access_key" "Instance-saEN_iam_access_key" {
+      user = aws_iam_user.Instance-saEN_iam.name
 }
 
 resource "aws_instance" "Instance-KkDr" {
@@ -111,9 +147,19 @@ resource "aws_iam_access_key" "Glacier-HXCo-maPv-iYUr-zfkK-hOIM_iam_access_key" 
       user = aws_iam_user.Glacier-HXCo-maPv-iYUr-zfkK-hOIM_iam.name
 }
 
+resource "aws_iam_instance_profile" "Instance-saEN_iam_role_instance_profile" {
+      name = "Instance-saEN_iam_role_instance_profile"
+      role = aws_iam_role.Instance-saEN_iam_role.name
+}
+
 resource "aws_iam_instance_profile" "Instance-KkDr_iam_role_instance_profile" {
       name = "Instance-KkDr_iam_role_instance_profile"
       role = aws_iam_role.Instance-KkDr_iam_role.name
+}
+
+resource "aws_iam_role" "Instance-saEN_iam_role" {
+      name = "Instance-saEN_iam_role"
+      assume_role_policy = "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Action\": \"sts:AssumeRole\",\n      \"Principal\": {\n        \"Service\": \"ec2.amazonaws.com\"\n      },\n      \"Effect\": \"Allow\",\n      \"Sid\": \"\"\n    }\n  ]\n}"
 }
 
 resource "aws_iam_role" "Instance-KkDr_iam_role" {
@@ -121,9 +167,19 @@ resource "aws_iam_role" "Instance-KkDr_iam_role" {
       assume_role_policy = "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Action\": \"sts:AssumeRole\",\n      \"Principal\": {\n        \"Service\": \"ec2.amazonaws.com\"\n      },\n      \"Effect\": \"Allow\",\n      \"Sid\": \"\"\n    }\n  ]\n}"
 }
 
+resource "aws_iam_role_policy_attachment" "Instance-saEN_iam_role_Bucket-mOxA-kSCp-Fnup-LOhD-XyaX_iam_policy0_attachment" {
+      policy_arn = aws_iam_policy.Bucket-mOxA-kSCp-Fnup-LOhD-XyaX_iam_policy0.arn
+      role = aws_iam_role.Instance-saEN_iam_role.name
+}
+
 resource "aws_iam_role_policy_attachment" "Instance-KkDr_iam_role_Bucket-mOxA-kSCp-Fnup-LOhD-XyaX_iam_policy0_attachment" {
       policy_arn = aws_iam_policy.Bucket-mOxA-kSCp-Fnup-LOhD-XyaX_iam_policy0.arn
       role = aws_iam_role.Instance-KkDr_iam_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "Instance-saEN_iam_role_Glacier-HXCo-maPv-iYUr-zfkK-hOIM_iam_policy0_attachment" {
+      policy_arn = aws_iam_policy.Glacier-HXCo-maPv-iYUr-zfkK-hOIM_iam_policy0.arn
+      role = aws_iam_role.Instance-saEN_iam_role.name
 }
 
 resource "aws_iam_role_policy_attachment" "Instance-KkDr_iam_role_Glacier-HXCo-maPv-iYUr-zfkK-hOIM_iam_policy0_attachment" {
@@ -197,7 +253,7 @@ resource "aws_security_group" "devxp_security_group" {
       }
 }
 
-data "aws_iam_policy_document" "Instance-KkDr_iam_policy_document" {
+data "aws_iam_policy_document" "Instance-saEN_iam_policy_document" {
       statement {
         actions = ["ec2:RunInstances", "ec2:AssociateIamInstanceProfile", "ec2:ReplaceIamInstanceProfileAssociation"]
         effect = "Allow"
@@ -206,7 +262,7 @@ data "aws_iam_policy_document" "Instance-KkDr_iam_policy_document" {
       statement {
         actions = ["iam:PassRole"]
         effect = "Allow"
-        resources = [aws_instance.Instance-KkDr.arn]
+        resources = [aws_instance.Instance-saEN.arn]
       }
 }
 
@@ -220,6 +276,19 @@ data "aws_ami" "amazon_latest" {
       filter {
         name = "virtualization-type"
         values = ["hvm"]
+      }
+}
+
+data "aws_iam_policy_document" "Instance-KkDr_iam_policy_document" {
+      statement {
+        actions = ["ec2:RunInstances", "ec2:AssociateIamInstanceProfile", "ec2:ReplaceIamInstanceProfileAssociation"]
+        effect = "Allow"
+        resources = ["arn:aws:ec2:::*"]
+      }
+      statement {
+        actions = ["iam:PassRole"]
+        effect = "Allow"
+        resources = [aws_instance.Instance-KkDr.arn]
       }
 }
 
